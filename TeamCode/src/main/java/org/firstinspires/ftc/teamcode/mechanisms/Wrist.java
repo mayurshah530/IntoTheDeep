@@ -34,4 +34,7 @@ public class Wrist {
         return new InstantAction(() -> wrist.setPosition(WRIST_FOLDED_OUT));
     }
 
+    public void reset() {
+        wrist.setPosition(WRIST_FOLDED_IN);
+    }
 }

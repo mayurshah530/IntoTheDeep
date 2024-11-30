@@ -38,6 +38,10 @@ public class Intake {
         intake.setPower(INTAKE_OFF);
     }
 
+    public void reset() {
+        intake.setPower(INTAKE_OFF);
+    }
+
     // auto
     public class DepositAuto implements Action {
         // initialize variables

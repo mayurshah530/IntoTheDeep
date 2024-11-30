@@ -22,6 +22,10 @@ public class Lift {
     double liftPosition;
     public Lift(HardwareMap hardwareMap) {
         motor = hardwareMap.get(DcMotorEx.class, "armext");
+        reset();
+    }
+
+    public void reset() {
         motor.setDirection(DcMotorSimple.Direction.REVERSE);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setTargetPosition(0);

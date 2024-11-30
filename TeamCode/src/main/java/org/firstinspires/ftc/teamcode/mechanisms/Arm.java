@@ -58,6 +58,10 @@ public class Arm {
 
     public Arm(HardwareMap hardwareMap) {
         motor = hardwareMap.get(DcMotorEx.class, "arm");
+        reset();
+    }
+
+    public void reset() {
         motor.setDirection(DcMotorSimple.Direction.REVERSE);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         /* Before starting the armMotor. We'll make sure the TargetPosition is set to 0.
