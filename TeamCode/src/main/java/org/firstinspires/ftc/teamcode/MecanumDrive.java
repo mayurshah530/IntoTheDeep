@@ -57,6 +57,10 @@ public final class MecanumDrive {
         pose = new Pose2d(0,0,0);
     }
 
+    public void reset() {
+        pose = new Pose2d(0,0,0);
+    }
+
     public void resetYaw() {
         imu.resetYaw();
     }
