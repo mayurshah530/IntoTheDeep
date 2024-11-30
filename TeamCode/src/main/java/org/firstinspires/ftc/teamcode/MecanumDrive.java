@@ -53,6 +53,10 @@ import java.util.List;
 
 @Config
 public final class MecanumDrive {
+    public void reset() {
+        pose = new Pose2d(0,0,0);
+    }
+
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on
