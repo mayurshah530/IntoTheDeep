@@ -41,7 +41,7 @@ public class Arm {
     If you'd like it to move further, increase that number. If you'd like it to not move
     as far from the starting position, decrease it. */
 
-    public static double ARM_COLLECT_DEG = 230;
+    public static double ARM_COLLECT_DEG = 232;
     public static double ARM_COLLAPSED_INTO_ROBOT  = 0 * ARM_TICKS_PER_DEGREE;
     public static double ARM_COLLECT               = ARM_COLLECT_DEG * ARM_TICKS_PER_DEGREE;
     public static double ARM_CLEAR_BARRIER         = 219 * ARM_TICKS_PER_DEGREE;
@@ -51,7 +51,8 @@ public class Arm {
     public static double ARM_ATTACH_HANGING_HOOK   = 120 * ARM_TICKS_PER_DEGREE;
     public static double ARM_WINCH_ROBOT           = 15  * ARM_TICKS_PER_DEGREE;
 
-    public static double ARM_ROBOT_TRAVEL = 120 * ARM_TICKS_PER_DEGREE;
+    public static double ARM_VERTICAL = 120 * ARM_TICKS_PER_DEGREE;
+    public static double ARM_ROBOT_TRAVEL = 219 * ARM_TICKS_PER_DEGREE;
 
     /* A number in degrees that the triggers can adjust the arm position by */
     public static double FUDGE_FACTOR = 15 * ARM_TICKS_PER_DEGREE;
@@ -106,5 +107,8 @@ public class Arm {
     }
     public Action armRobotTravelAction(){
         return new ArmScoreAuto((int)ARM_ROBOT_TRAVEL);
+    }
+    public Action armVerticalAction(){
+        return new ArmScoreAuto((int)ARM_VERTICAL);
     }
 }
