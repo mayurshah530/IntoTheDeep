@@ -26,23 +26,27 @@ public class MeepMeepTesting {
 //                .build());
         DriveShim drive = myBot.getDrive();
         myBot.runAction(drive.actionBuilder(new Pose2d(-38,-60, Math.toRadians(180)))
+                // start to basket
                 .strafeToLinearHeading(new Vector2d(-38, -56), Math.toRadians(180))
                 .strafeToLinearHeading(new Vector2d(-50, -50), Math.toRadians(180+45))
+                // basket to sample 1
                 .strafeToLinearHeading(new Vector2d(-28, -30), Math.toRadians(161))
+                // pick up sample 1
+                .setTangent(Math.toRadians(161))
+                .lineToX(-28-4)
+                // sample 1 to basket
+                .strafeToLinearHeading(new Vector2d(-52, -52), Math.toRadians(180+45))
+                // basket to sample 2
+                .strafeToLinearHeading(new Vector2d(-44, -24), Math.toRadians(180))
 
-//                .strafeToLinearHeading(new Vector2d(-36, -24), Math.toRadians(180))
-//                .strafeToLinearHeading(new Vector2d(-52, -52), Math.toRadians(180+45))
-//
+                .strafeToLinearHeading(new Vector2d(-46, -24), Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(-52, -52), Math.toRadians(180+45))
 
-//                .strafeToLinearHeading(new Vector2d(-44, -24), Math.toRadians(180))
-//                .strafeToLinearHeading(new Vector2d(-46, -24), Math.toRadians(180))
-//                .strafeToLinearHeading(new Vector2d(-52, -52), Math.toRadians(180+45))
-//
-//
-//                .strafeToLinearHeading(new Vector2d(-54, -24), Math.toRadians(180))
-//                .strafeToLinearHeading(new Vector2d(-56, -24), Math.toRadians(180))
-//                .strafeToLinearHeading(new Vector2d(-52, -52), Math.toRadians(180+45))
-//
+
+                .strafeToLinearHeading(new Vector2d(-54, -24), Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(-56, -24), Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(-52, -52), Math.toRadians(180+45))
+
 
 
 

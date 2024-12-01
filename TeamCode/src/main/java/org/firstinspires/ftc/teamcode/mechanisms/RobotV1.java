@@ -60,4 +60,12 @@ public class RobotV1 {
             lift.liftDownAction()
         );
     }
+
+    public Action travelAction() {
+        return new SequentialAction(
+                arm.armVerticalAction()
+                ,lift.liftDownAction()
+                ,arm.armRobotTravelAction()
+        );
+    }
 }
