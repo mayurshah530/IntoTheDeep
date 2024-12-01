@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import com.acmerobotics.roadrunner.Pose2d;
@@ -36,7 +39,25 @@ public class RobotV1 {
         intake.reset();
         wrist.reset();
         lift.reset();
+    }
 
+    public Action scoreHighAction(){
+        return new SequentialAction(
+                arm.armScoreAction(),
+                lift.liftUpAction());
+    }
 
+    public Action collectAction(){
+        return new SequentialAction(
+                arm.armGroundCollectAction(),
+                intake.intakeAction()
+        );
+    }
+
+    public Action foldBackAction(){
+        return new ParallelAction(
+            arm.armfoldbackaction(),
+            lift.liftDownAction()
+        );
     }
 }
