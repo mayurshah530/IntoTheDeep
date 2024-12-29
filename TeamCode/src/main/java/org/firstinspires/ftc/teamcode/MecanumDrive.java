@@ -554,6 +554,57 @@ public final class MecanumDrive {
         leftBack.setPower(backLeftPower);
         rightBack.setPower(backRightPower);
     }
+
+    public static Rotation2d userHeadingFromFieldHeading = new Rotation2d(0,1);
+
+    public void moveRobotUserCentric(double y, double x, double rx) {
+        // Calculate wheel powers. The formula is correct for X forward, +lateral => left, +yaw => counter-clockwise.
+        // Note: This is different from usual basic omni opmode.
+
+        // Convert the heading to the "user" coordinate system.
+        Rotation2d headingUserCentric = userHeadingFromFieldHeading.times(pose.heading);
+        double cosHeading = headingUserCentric.real;
+        double sinHeading = headingUserCentric.imag;
+
+        // Rotate the movement direction counter to the bot's rotation
+        double rotX = x * cosHeading - y * sinHeading;
+        double rotY = x * sinHeading + y * cosHeading;
+
+        rotX = rotX * 1.1;  // Counteract imperfect strafing
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+        double frontLeftPower = (rotY + rotX + rx) / denominator;
+        double backLeftPower = (rotY - rotX + rx) / denominator;
+        double frontRightPower = (rotY - rotX - rx) / denominator;
+        double backRightPower = (rotY + rotX - rx) / denominator;
+
+        leftFront.setPower(frontLeftPower);
+        leftBack.setPower(backLeftPower);
+        rightFront.setPower(frontRightPower);
+        rightBack.setPower(backRightPower);
+
+        // Normalize wheel powers to be less than 1.0
+        double max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
+        max = Math.max(max, Math.abs(backLeftPower));
+        max = Math.max(max, Math.abs(backRightPower));
+
+        if (max > 1.0) {
+            frontLeftPower /= max;
+            frontRightPower /= max;
+            backLeftPower /= max;
+            backRightPower /= max;
+        }
+
+        // Send powers to the wheels.
+        leftFront.setPower(frontLeftPower);
+        rightFront.setPower(frontRightPower);
+        leftBack.setPower(backLeftPower);
+        rightBack.setPower(backRightPower);
+    }
+
     public void moveRobot(double axial, double lateral, double yaw) {
         // Calculate wheel powers. The formula is correct for X forward, +lateral => left, +yaw => counter-clockwise.
         // Note: This is different from usual basic omni opmode.

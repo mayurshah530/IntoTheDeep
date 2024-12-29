@@ -79,6 +79,7 @@ public class TeleOpV2 extends OpMode
     public void init_loop() {
         telemetry.addData("RobotPoseX: ", robot.drive.pose.position.x);
         telemetry.addData("RobotPoseY: ", robot.drive.pose.position.y);
+        telemetry.addData("RobotPoseHeading: ", Math.toDegrees(robot.drive.pose.heading.toDouble()));
         telemetry.addData("armTarget: ", robot.arm.motor.getTargetPosition());
         telemetry.addData("arm Encoder: ", robot.arm.motor.getCurrentPosition());
     }
@@ -97,11 +98,19 @@ public class TeleOpV2 extends OpMode
     @Override
     public void loop() {
 
+        // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+        double y = -gamepad1.left_stick_y;
+        double x = gamepad1.left_stick_x;
+        double rx = gamepad1.right_stick_x;
+
+        // Use the 3 dead wheels based yaw
+        robot.drive.moveRobotUserCentric(y, x, rx);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("RobotPoseX: ", robot.drive.pose.position.x);
         telemetry.addData("RobotPoseY: ", robot.drive.pose.position.y);
+        telemetry.addData("RobotPoseHeading: ", Math.toDegrees(robot.drive.pose.heading.toDouble()));
         telemetry.addData("armTarget: ", robot.arm.motor.getTargetPosition());
         telemetry.addData("arm Encoder: ", robot.arm.motor.getCurrentPosition());
 
