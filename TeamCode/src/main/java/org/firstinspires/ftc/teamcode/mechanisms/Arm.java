@@ -5,11 +5,12 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Actions;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import java.security.PublicKey;
 
 @Config
 public class Arm {
@@ -42,18 +43,24 @@ public class Arm {
     If you'd like it to move further, increase that number. If you'd like it to not move
     as far from the starting position, decrease it. */
 
-    public static double ARM_COLLECT_DEG = 231;
+    public static double ARM_COLLECT_DEG = 232;
     public static double ARM_COLLAPSED_INTO_ROBOT  = 0 * ARM_TICKS_PER_DEGREE;
     public static double ARM_COLLECT               = ARM_COLLECT_DEG * ARM_TICKS_PER_DEGREE;
     public static double ARM_CLEAR_BARRIER         = 219 * ARM_TICKS_PER_DEGREE;
     public static double ARM_SCORE_SPECIMEN        = 174 * ARM_TICKS_PER_DEGREE;
     public static double ARM_SCORE_SAMPLE_IN_LOW   = 174 * ARM_TICKS_PER_DEGREE;
-    public static double ARM_SCORE_SAMPLE_IN_HIGH   = 120 * ARM_TICKS_PER_DEGREE;
+    public static double ARM_SCORE_SAMPLE_IN_HIGH   = 128 * ARM_TICKS_PER_DEGREE;
     public static double ARM_ATTACH_HANGING_HOOK   = 120 * ARM_TICKS_PER_DEGREE;
     public static double ARM_WINCH_ROBOT           = 15  * ARM_TICKS_PER_DEGREE;
 
+    public static double ARM_PARK_POS = 60 * ARM_TICKS_PER_DEGREE;
+
+    public static double ARM_VERTICAL = 120 * ARM_TICKS_PER_DEGREE;
+    public static double ARM_ROBOT_TRAVEL = 219 * ARM_TICKS_PER_DEGREE;
+
     /* A number in degrees that the triggers can adjust the arm position by */
     public static double FUDGE_FACTOR = 15 * ARM_TICKS_PER_DEGREE;
+
 
     public Arm(HardwareMap hardwareMap) {
         motor = hardwareMap.get(DcMotorEx.class, "arm");
@@ -62,8 +69,13 @@ public class Arm {
         /* Before starting the armMotor. We'll make sure the TargetPosition is set to 0.
         Then we'll set the RunMode to RUN_TO_POSITION. And we'll ask it to stop and reset encoder.
         If you do not have the encoder plugged into this motor, it will not run in this code. */
+//        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    // call reset() only from autonomous code and not from the teleop.
+    // This way, the arm encoder position is not reset between autonomous and teleop.
+    public void reset(){
         motor.setTargetPosition(0);
-        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
@@ -83,9 +95,9 @@ public class Arm {
 
             int currentPosition = motor.getCurrentPosition();
             int error = Math.abs(_targetPos - currentPosition);
-            packet.put("Target", _targetPos);
-            packet.put("ArmPos Lift", currentPosition);
-            packet.put("Error", error);
+            packet.put("ArmTarget", _targetPos);
+            packet.put("ArmPos", currentPosition);
+            packet.put("ArmError", error);
             // keep running until we're close enough
             return error > 5; // ticks
         }
@@ -93,8 +105,20 @@ public class Arm {
     public Action armScoreAction() {
         return new ArmScoreAuto((int)ARM_SCORE_SAMPLE_IN_HIGH);
     }
-    public Action armPositionAction() {
+    public Action armfoldbackaction() {
         return new ArmScoreAuto((int)ARM_COLLAPSED_INTO_ROBOT);
     }
-    public Action armGroundCollectAction(){return new ArmScoreAuto((int)ARM_COLLECT);}
+    public Action armGroundCollectAction(){
+        return new ArmScoreAuto((int)ARM_COLLECT);
+    }
+    public Action armRobotTravelAction(){
+        return new ArmScoreAuto((int)ARM_ROBOT_TRAVEL);
+    }
+    public Action armVerticalAction(){
+        return new ArmScoreAuto((int)ARM_VERTICAL);
+    }
+
+    public Action armParkAction(){return  new ArmScoreAuto((int)ARM_PARK_POS);
+
+    }
 }

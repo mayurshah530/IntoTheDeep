@@ -4,26 +4,25 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Arm;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Lift;
+import org.firstinspires.ftc.teamcode.mechanisms.Wrist;
 
 
 @Config
-@Autonomous(name = "\uD83D\uDD34 - RedNearBasket", group = "RoadRunner 1.0")
+@Autonomous(name = "\uD83D\uDD34 - RedNearBasketV2", group = "RoadRunner 1.0")
 public class RedNearBasketv2 extends LinearOpMode {
 
 
-    // Start position red near
     Pose2d RED_SCORE_START_POSE = new Pose2d(-38, -60, Math.toRadians(180));
 
 
@@ -34,20 +33,53 @@ public class RedNearBasketv2 extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         Arm arm = new Arm(hardwareMap);
         Lift lift = new Lift(hardwareMap);
+        Wrist wrist = new Wrist(hardwareMap);
+
         TrajectoryActionBuilder traj = drive.actionBuilder(RED_SCORE_START_POSE)
                 .strafeToLinearHeading(new Vector2d(-38, -56), Math.toRadians(180))
-                .strafeToLinearHeading(new Vector2d(-51, -51), Math.toRadians(180+45));
+                .strafeToLinearHeading(new Vector2d(-50, -50), Math.toRadians(180+45));
+
+        Action ta = traj.build();
 
 
         Action scoreHighAction = new ParallelAction(
+                wrist.wristFoldOutAction(),
                 arm.armScoreAction(),
                 lift.liftUpAction()
         );
 
+        Action taScore = new ParallelAction(ta, scoreHighAction);
+
         Action foldBackAction = new ParallelAction(
-                arm.armPositionAction(),
+                arm.armfoldbackaction(),
                 lift.liftDownAction()
         );
+        Action armpose = new ParallelAction(
+                arm.armRobotTravelAction(),
+                lift.liftDownAction()
+                );
+        TrajectoryActionBuilder drivetosample1 = traj.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-30, -22), Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(-26, -22), Math.toRadians(180));
+        Action drivetosample1action = drivetosample1.build();
+
+        Action travelto1 = new ParallelAction(
+                armpose,
+                drivetosample1action
+        );
+        Action collectAction = new SequentialAction(
+                arm.armGroundCollectAction(),
+                intake.intakeAction()
+        );
+        Action drivetodepositsample = drivetosample1.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-50, -50), Math.toRadians(180+45))
+                .build();
+        Action scoresample1 = new SequentialAction(
+                scoreHighAction,
+                drivetodepositsample
+        );
+
+
 
         while(!isStopRequested() && !opModeIsActive()) {
             // Wait for the start signal
@@ -59,9 +91,15 @@ public class RedNearBasketv2 extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        scoreHighAction,
+                        taScore,
+                        new SleepAction(0.1), // sleep for 1 sec
                         intake.depositAction(),
-                        foldBackAction
+                        travelto1,
+                        collectAction,
+                        armpose
+//                        scoresample1
+//                        intake.depositAction(),
+//                        foldBackAction
                 )
         );
 
