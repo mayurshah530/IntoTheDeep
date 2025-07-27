@@ -7,8 +7,10 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
+@Config
 public class Robotv2 {
     public MecanumDrive drive;
     public Armv2 arm;
@@ -21,6 +23,13 @@ public class Robotv2 {
 
     public LeftActuator leftActuator;
     public RightActuator rightActuator;
+
+    public static double PRE_PICKUP_SLEEP = 1;
+    public static double POST_PICKUP_SLEEP = 1;
+
+    public static double PRE_DROP_SLEEP = 1;
+    public static double POST_DROP_SLEEP = 1;
+    public static double POST_DROP_SLEEP2 = 1;
 
     public Robotv2(HardwareMap hardwareMap, Pose2d startPose){
         drive = new MecanumDrive(hardwareMap, startPose);
@@ -42,26 +51,25 @@ public class Robotv2 {
         return new SequentialAction(
                 new ParallelAction(
                         arm.armScoreAction(),
-                        new SequentialAction(
-                                new SleepAction(0.5),
-                                wrist.wristVerticalAction()
-                        ))
+                        wrist.wristVerticalAction()
+                )
                 , lift.liftUpAction()
                 , wrist.wristFoldOutAction()
-                , new SleepAction(0.5)
+                , new SleepAction(PRE_DROP_SLEEP)
                 , claw.clawOpenAction()
-                , new SleepAction(.2)
+                , new SleepAction(POST_DROP_SLEEP)
+                , wrist.wristVerticalAction()
+                , new SleepAction(POST_DROP_SLEEP2)
         );
     }
     public Action comeDownActionAuto(){
         return new SequentialAction(
                 wrist.wristVerticalAction(),
-                new SleepAction(0.3),
+                new SleepAction(PRE_PICKUP_SLEEP),
                 lift.liftOutPickUpAction(),
-                new ParallelAction(
-                        wrist.wristFoldInAction(),
-                        arm.armPickupGroundSampleLiftOutAction()
-                )
+                wrist.wristFoldInAction(),
+                new SleepAction(POST_PICKUP_SLEEP),
+                arm.armPickupGroundSampleLiftOutAction()
         );
     }
 

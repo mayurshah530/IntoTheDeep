@@ -20,14 +20,14 @@ public class Liftv2 {
 
     public static double LIFT_COLLAPSED = 0 * LIFT_TICKS_PER_MM;
     public static  double LIFT_SCORING_IN_LOW_BASKET = 0 * LIFT_TICKS_PER_MM;
-    public static  double LIFT_SCORING_IN_HIGH_BASKET = 3550;
+    public static  double LIFT_SCORING_IN_HIGH_BASKET = 3650;
 
     public static double LIFT_PARK_POSITION = 800;
     public  static int LIFT_HANG_SLIDES_POSITION = 3200;
 
     public static int LIFT_HANG_SLIDES_POSITION_END = 2000;
 
-    public static int LIFT_OUT_PICKUP_GROUND = 1500;
+    public static int LIFT_OUT_PICKUP_GROUND = 1600;
 
     public static double LIFT_ACTION_TIMEOUT_SEC = 5.0;
 
@@ -68,7 +68,7 @@ public class Liftv2 {
             }
             duration = Actions.now() - beginTs;
             motor.setTargetPosition(_targetPos);
-            motor.setVelocity(10000);
+            motor.setVelocity( 50000);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             int currentPosition = motor.getCurrentPosition();
